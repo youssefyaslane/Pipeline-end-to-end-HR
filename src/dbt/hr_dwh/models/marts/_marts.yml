@@ -1,0 +1,138 @@
+version: 2
+
+models:
+  - name: dim_department
+    columns:
+      - name: dept_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_position
+    columns:
+      - name: position_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_manager
+    columns:
+      - name: manager_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_performance
+    columns:
+      - name: perf_score_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_employment_status
+    columns:
+      - name: emp_status_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_marital_status
+    columns:
+      - name: marital_status_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_recruitment_source
+    columns:
+      - name: source_sk
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    columns:
+      - name: date_sk
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_employee
+    columns:
+      - name: employee_sk
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_employee
+    columns:
+      - name: employee_sk
+        tests:
+          - unique
+          - not_null
+      - name: department_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_department')
+                field: dept_id
+      - name: position_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_position')
+                field: position_id
+      - name: manager_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_manager')
+                field: manager_id
+      - name: performance_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_performance')
+                field: perf_score_id
+      - name: employment_status_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_employment_status')
+                field: emp_status_id
+      - name: marital_status_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_marital_status')
+                field: marital_status_id
+      - name: recruitment_source_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_recruitment_source')
+                field: source_sk
+      - name: date_of_birth_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_sk
+      - name: date_of_hire_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_sk
+      - name: date_of_termination_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_sk
+      - name: last_performance_review_date_fk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_sk
