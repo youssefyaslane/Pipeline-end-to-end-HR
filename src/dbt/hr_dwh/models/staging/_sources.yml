@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: hr_employees
+        description: "Données brutes des employés, chargées telles quelles depuis HRDataset_v14.csv"
+        columns:
+          - name: EmpID
+            quote: true
+            tests:
+              - not_null
+              - unique
