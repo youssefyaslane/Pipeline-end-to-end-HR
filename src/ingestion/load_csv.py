@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 
 ROOT = Path(__file__).resolve().parents[2]
 CSV_PATH = ROOT / "dataset" / "HRDataset_v14.csv"
@@ -20,7 +20,17 @@ def load_csv_to_raw():
     engine = create_engine(
         f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
-    df.to_sql("hr_employees", engine, schema="raw", if_exists="replace", index=False)
+
+    table_exists = inspect(engine).has_table("hr_employees", schema="raw")
+
+    with engine.begin() as conn:
+        if table_exists:
+            # TRUNCATE plutot que DROP/CREATE : preserve les vues/tables dbt
+            # qui dependent deja de raw.hr_employees (ex: staging.stg_employees)
+            conn.execute(text("TRUNCATE TABLE raw.hr_employees"))
+            df.to_sql("hr_employees", conn, schema="raw", if_exists="append", index=False)
+        else:
+            df.to_sql("hr_employees", conn, schema="raw", if_exists="replace", index=False)
 
     print(f"Loaded {len(df)} rows into raw.hr_employees")
 
