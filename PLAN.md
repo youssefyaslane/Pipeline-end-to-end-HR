@@ -284,4 +284,5 @@ On avance **phase par phase**, dans l'ordre ci-dessus. À chaque phase :
 - [x] Schémas visuels (architecture pipeline + modèle en étoile) générés et publiés
 - [x] Phase 1 — PostgreSQL seul dans Docker : conteneur `hr_postgres` opérationnel, port 5432 publié, schémas `raw/staging/marts` créés
 - [x] Phase 2 — Ingestion CSV : 311 lignes chargées dans `raw.hr_employees` via `src/ingestion/load_csv.py` ; `requirements.txt` à la racine. Défaut de qualité supplémentaire découvert : `Zip` a perdu son zéro de tête.
-- [ ] Phase 3 à 6 — non démarrées
+- [x] Phase 3 — Projet dbt-core (pas dbt-fusion, qui exige une licence cloud) créé dans `src/dbt/hr_dwh/`. Source `raw.hr_employees` déclarée avec tests `not_null`/`unique` sur `EmpID` (via `quote: true`, contournement nécessaire car Postgres est sensible à la casse sur identifiants entre guillemets). Modèle `stg_employees` complet : colonnes renommées en snake_case, `Sex`/`Department` trimés, dates parsées en `DATE`, `MarriedID`/`Termd` convertis en `is_married`/`is_terminated` (booléens), `Zip` reconstitué à 5 chiffres avec `lpad`. `dbt run` + `dbt test` passent.
+- [ ] Phase 4 à 6 — non démarrées
