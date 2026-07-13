@@ -291,4 +291,7 @@ On avance **phase par phase**, dans l'ordre ci-dessus. À chaque phase :
   - `dim_manager` : certains managers ont 2 `manager_id` différents (Brandon R. LeBlanc, Michael Albert) ; 8 employés ont un `manager_id` NULL → laissés tels quels (FK NULL légitime plutôt que deviner).
   - **Bug de parsing de date découvert** : `to_date(..., 'MM/DD/YY')` sur `DOB` donnait des naissances dans le futur (Postgres interprète `YY` avec un pivot fixe 69/70, donc "69" → 2069 au lieu de 1969) → corrigé en forçant explicitement le préfixe `19` via `split_part`.
   - `Position` (et d'autres colonnes) avaient aussi des espaces parasites non détectés en Phase 3 → `TRIM()` étendu à toutes les colonnes texte de `stg_employees`.
-- [ ] Phase 5 à 6 — non démarrées
+- [x] Phase 5 — Airflow ajouté au `docker-compose.yml` (services `airflow-init`/`airflow-webserver`/`airflow-scheduler`, LocalExecutor, métadonnées dans une base `airflow` dédiée sur le même Postgres). DAG `hr_pipeline` avec 3 tâches enchaînées (`ingest_csv` → `dbt_run` → `dbt_test`), déclenché avec succès depuis l'UI (http://localhost:8080).
+  - **Bug corrigé** : `load_csv.py` utilisait `if_exists="replace"` (DROP/CREATE), ce qui échouait une fois que `staging.stg_employees` (vue dbt) dépendait de `raw.hr_employees`. Passé à TRUNCATE + INSERT pour un rechargement idempotent qui ne casse pas les objets dépendants.
+  - Points de montage Docker alignés sur la structure `src/` du projet (`/opt/airflow/src/ingestion`, `/opt/airflow/src/dbt`) pour que les chemins relatifs de `load_csv.py` restent valides dans le conteneur.
+- [ ] Phase 6 — non démarrée
